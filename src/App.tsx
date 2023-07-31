@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import shortid from 'shortid';
+import Input from './components/Input';
 
 interface Todo {
   id: string;
@@ -9,59 +10,62 @@ interface Todo {
 }
 
 const App = () => {
-  const [title, setTitle] = useState<string>('');
-  const [contents, setContents] = useState<string>('');
-
   const [todoList, setTodoList] = useState<Todo[]>([
     {
       id: shortid.generate(),
-      title: 'title1',
-      contents: 'contents1',
+      title: '제주도',
+      contents: '일주일 살기',
       isDone: false
     },
     {
       id: shortid.generate(),
-      title: 'title2',
-      contents: 'contents2',
+      title: '서울',
+      contents: '모각지',
       isDone: true
-    },
-    {
-      id: shortid.generate(),
-      title: 'title3',
-      contents: 'contents3',
-      isDone: false
     }
   ]);
+  const [title, setTitle] = useState<string>('');
+  const [contents, setContents] = useState<string>('');
+
+  const todoRef = useRef<HTMLInputElement>(null);
+
+  const submitTodo = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const newTodo = {
+      id: shortid.generate(),
+      title,
+      contents,
+      isDone: false
+    };
+
+    setTodoList([...todoList, newTodo]);
+
+    setTitle('');
+    setContents('');
+  };
 
   return (
     <div>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-
-          const newTodo = {
-            id: shortid.generate(),
-            title,
-            contents,
-            isDone: false
-          };
-
-          setTodoList([...todoList, newTodo]);
-
-          setTitle('');
-          setContents('');
-        }}
-      >
-        <input
+      <form onSubmit={submitTodo}>
+        <Input
+          ref={todoRef}
+          type="text"
+          name="title"
+          title="title"
           value={title}
-          onChange={(event) => {
-            setTitle(event.target.value);
+          onChange={(e) => {
+            setTitle(e.target.value);
           }}
+          autoFocus
         />
-        <input
+        <Input
+          type="text"
+          name="contents"
+          title="contents"
           value={contents}
-          onChange={(event) => {
-            setContents(event.target.value);
+          onChange={(e) => {
+            setContents(e.target.value);
           }}
         />
         <button type="submit">add</button>
@@ -74,10 +78,8 @@ const App = () => {
             .map((todo) => {
               return (
                 <div key={todo.id}>
-                  <p>{todo.id}</p>
                   <p>{todo.title}</p>
                   <p>{todo.contents}</p>
-                  <p>{todo.isDone.toString()}</p>
                   <button
                     onClick={() => {
                       const updateTodo = todoList.map((item) => {
@@ -114,10 +116,8 @@ const App = () => {
             .map((todo) => {
               return (
                 <div key={todo.id}>
-                  <p>{todo.id}</p>
                   <p>{todo.title}</p>
                   <p>{todo.contents}</p>
-                  <p>{todo.isDone.toString()}</p>
                   <button
                     onClick={() => {
                       const updateTodo = todoList.map((item) => {

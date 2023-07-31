@@ -1,7 +1,25 @@
-import React from 'react';
+import React, { forwardRef, Ref } from 'react';
 
-const input = () => {
-  return <div>input</div>;
+interface InputProps {
+  type: string;
+  name: string;
+  id?: string;
+  title: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  autoFocus?: boolean;
+}
+
+const Input = (
+  { type, name, id = name, title, value, onChange, autoFocus }: InputProps,
+  ref: Ref<HTMLInputElement>
+) => {
+  return (
+    <>
+      <label htmlFor={id}>{title}</label>
+      <input ref={ref} type={type} name={name} value={value} onChange={onChange} autoFocus={autoFocus} />
+    </>
+  );
 };
 
-export default input;
+export default forwardRef(Input);
